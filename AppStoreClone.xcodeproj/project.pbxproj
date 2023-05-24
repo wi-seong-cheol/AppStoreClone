@@ -7,15 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4D1B7CB22A1DF445000F1A0B /* AppStoreClone.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 4D1B7CAB2A1DF445000F1A0B /* AppStoreClone.xcdatamodeld */; };
+		4D1B7CB32A1DF445000F1A0B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4D1B7CAD2A1DF445000F1A0B /* Assets.xcassets */; };
+		4D1B7CB42A1DF445000F1A0B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4D1B7CAE2A1DF445000F1A0B /* LaunchScreen.storyboard */; };
+		4D1B7CB72A1DF476000F1A0B /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D1B7CB62A1DF475000F1A0B /* ViewController.swift */; };
 		4D897C052A1CF8C600442D39 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D897C042A1CF8C600442D39 /* SearchViewController.swift */; };
 		4D897C072A1CF8FC00442D39 /* SearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D897C062A1CF8FC00442D39 /* SearchViewModel.swift */; };
 		4D897C092A1CF96B00442D39 /* GridCollectionViewFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D897C082A1CF96B00442D39 /* GridCollectionViewFlowLayout.swift */; };
 		4DF70DCE2A1C52340082823A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DF70DCD2A1C52340082823A /* AppDelegate.swift */; };
 		4DF70DD02A1C52340082823A /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DF70DCF2A1C52340082823A /* SceneDelegate.swift */; };
-		4DF70DD22A1C52340082823A /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DF70DD12A1C52340082823A /* ViewController.swift */; };
-		4DF70DD82A1C52340082823A /* AppStoreClone.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 4DF70DD62A1C52340082823A /* AppStoreClone.xcdatamodeld */; };
-		4DF70DDA2A1C52370082823A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4DF70DD92A1C52370082823A /* Assets.xcassets */; };
-		4DF70DDD2A1C52370082823A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4DF70DDB2A1C52370082823A /* LaunchScreen.storyboard */; };
 		4DF70DE82A1C52380082823A /* AppStoreCloneTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DF70DE72A1C52380082823A /* AppStoreCloneTests.swift */; };
 		4DF70DF22A1C52380082823A /* AppStoreCloneUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DF70DF12A1C52380082823A /* AppStoreCloneUITests.swift */; };
 		4DF70DF42A1C52380082823A /* AppStoreCloneUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DF70DF32A1C52380082823A /* AppStoreCloneUITestsLaunchTests.swift */; };
@@ -74,16 +74,16 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		4D1B7CAC2A1DF445000F1A0B /* AppStoreClone.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = AppStoreClone.xcdatamodel; sourceTree = "<group>"; };
+		4D1B7CAD2A1DF445000F1A0B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		4D1B7CAF2A1DF445000F1A0B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		4D1B7CB62A1DF475000F1A0B /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		4D897C042A1CF8C600442D39 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		4D897C062A1CF8FC00442D39 /* SearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewModel.swift; sourceTree = "<group>"; };
 		4D897C082A1CF96B00442D39 /* GridCollectionViewFlowLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GridCollectionViewFlowLayout.swift; sourceTree = "<group>"; };
 		4DF70DCA2A1C52340082823A /* AppStoreClone.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AppStoreClone.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4DF70DCD2A1C52340082823A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		4DF70DCF2A1C52340082823A /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		4DF70DD12A1C52340082823A /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		4DF70DD72A1C52340082823A /* AppStoreClone.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = AppStoreClone.xcdatamodel; sourceTree = "<group>"; };
-		4DF70DD92A1C52370082823A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		4DF70DDC2A1C52370082823A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		4DF70DDE2A1C52370082823A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4DF70DE32A1C52380082823A /* AppStoreCloneTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AppStoreCloneTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4DF70DE72A1C52380082823A /* AppStoreCloneTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStoreCloneTests.swift; sourceTree = "<group>"; };
@@ -139,6 +139,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4D1B7CAA2A1DF445000F1A0B /* Resource */ = {
+			isa = PBXGroup;
+			children = (
+				4D1B7CAB2A1DF445000F1A0B /* AppStoreClone.xcdatamodeld */,
+				4D1B7CAD2A1DF445000F1A0B /* Assets.xcassets */,
+				4D1B7CAE2A1DF445000F1A0B /* LaunchScreen.storyboard */,
+			);
+			path = Resource;
+			sourceTree = "<group>";
+		};
 		4DF70DC12A1C52330082823A = {
 			isa = PBXGroup;
 			children = (
@@ -171,7 +181,8 @@
 				4DF70E192A1C8DE50082823A /* Service */,
 				4DF70E252A1C8DE60082823A /* Util */,
 				4DF70E112A1C8D860082823A /* Module */,
-				4DF70E122A1C8D950082823A /* Resource */,
+				4D1B7CAA2A1DF445000F1A0B /* Resource */,
+				4D1B7CB62A1DF475000F1A0B /* ViewController.swift */,
 				4DF70DCD2A1C52340082823A /* AppDelegate.swift */,
 				4DF70DCF2A1C52340082823A /* SceneDelegate.swift */,
 				4DF70DDE2A1C52370082823A /* Info.plist */,
@@ -200,7 +211,6 @@
 			isa = PBXGroup;
 			children = (
 				4DF70E622A1CB1550082823A /* Common */,
-				4DF70DD12A1C52340082823A /* ViewController.swift */,
 				4DF70E692A1CBA750082823A /* Today */,
 				4DF70E6A2A1CBA7C0082823A /* Game */,
 				4DF70E6B2A1CBAA30082823A /* App */,
@@ -208,16 +218,6 @@
 				4DF70E6D2A1CBAAC0082823A /* Search */,
 			);
 			path = Module;
-			sourceTree = "<group>";
-		};
-		4DF70E122A1C8D950082823A /* Resource */ = {
-			isa = PBXGroup;
-			children = (
-				4DF70DD92A1C52370082823A /* Assets.xcassets */,
-				4DF70DDB2A1C52370082823A /* LaunchScreen.storyboard */,
-				4DF70DD62A1C52340082823A /* AppStoreClone.xcdatamodeld */,
-			);
-			path = Resource;
 			sourceTree = "<group>";
 		};
 		4DF70E132A1C8DE50082823A /* DI */ = {
@@ -501,8 +501,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4DF70DDD2A1C52370082823A /* LaunchScreen.storyboard in Resources */,
-				4DF70DDA2A1C52370082823A /* Assets.xcassets in Resources */,
+				4D1B7CB32A1DF445000F1A0B /* Assets.xcassets in Resources */,
+				4D1B7CB42A1DF445000F1A0B /* LaunchScreen.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -527,15 +527,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4DF70DD22A1C52340082823A /* ViewController.swift in Sources */,
-				4DF70DD82A1C52340082823A /* AppStoreClone.xcdatamodeld in Sources */,
 				4DF70E3D2A1C8DE60082823A /* Inject.swift in Sources */,
 				4DF70E702A1CBACA0082823A /* TodayViewModel.swift in Sources */,
 				4DF70E432A1C937C0082823A /* Track.swift in Sources */,
 				4DF70E642A1CB2FD0082823A /* TabBarViewController.swift in Sources */,
+				4D1B7CB22A1DF445000F1A0B /* AppStoreClone.xcdatamodeld in Sources */,
 				4DF70E332A1C8DE60082823A /* APIRequestService.swift in Sources */,
 				4DF70E482A1C97940082823A /* BaseInterceptor.swift in Sources */,
 				4DF70E442A1C937C0082823A /* ItunesResponse.swift in Sources */,
+				4D1B7CB72A1DF476000F1A0B /* ViewController.swift in Sources */,
 				4DF70E2F2A1C8DE60082823A /* DIContainer.swift in Sources */,
 				4DF70E3E2A1C8DE60082823A /* UIApplication + Extension.swift in Sources */,
 				4DF70E682A1CBA730082823A /* TodayViewController.swift in Sources */,
@@ -589,10 +589,10 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		4DF70DDB2A1C52370082823A /* LaunchScreen.storyboard */ = {
+		4D1B7CAE2A1DF445000F1A0B /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
-				4DF70DDC2A1C52370082823A /* Base */,
+				4D1B7CAF2A1DF445000F1A0B /* Base */,
 			);
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
@@ -923,12 +923,12 @@
 /* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
-		4DF70DD62A1C52340082823A /* AppStoreClone.xcdatamodeld */ = {
+		4D1B7CAB2A1DF445000F1A0B /* AppStoreClone.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
-				4DF70DD72A1C52340082823A /* AppStoreClone.xcdatamodel */,
+				4D1B7CAC2A1DF445000F1A0B /* AppStoreClone.xcdatamodel */,
 			);
-			currentVersion = 4DF70DD72A1C52340082823A /* AppStoreClone.xcdatamodel */;
+			currentVersion = 4D1B7CAC2A1DF445000F1A0B /* AppStoreClone.xcdatamodel */;
 			path = AppStoreClone.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
