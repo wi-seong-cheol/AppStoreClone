@@ -5,10 +5,9 @@
 //  Created by wi_seong on 2023/05/18.
 //
 
-import Foundation
 import UIKit
 
-class GridCollectionViewFlowLayout: UICollectionViewFlowLayout {
+final class GridCollectionViewFlowLayout: UICollectionViewFlowLayout {
     
     var ratioHeightToWidth = 1.0
     var numberOfColumns = 1
