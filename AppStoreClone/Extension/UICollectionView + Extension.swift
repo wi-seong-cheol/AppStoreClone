@@ -10,7 +10,7 @@ import UIKit
 
 extension UICollectionView {
     
-    func registerCell(withType type: UICollectionViewCell.Type,
+    func register(withType type: UICollectionViewCell.Type,
                       withReuseIdentifier identifier: String? = nil) {
         let cellId = identifier ?? String(describing: type)
         register(type, forCellWithReuseIdentifier: cellId)
@@ -23,7 +23,7 @@ extension UICollectionView {
         return cell
     }
     
-    func registerSupplementaryView(withType type: UICollectionReusableView.Type,
+    func register(withType type: UICollectionReusableView.Type,
                                    forSupplementaryViewOfKind elementKind: String = UICollectionView.elementKindSectionHeader,
                                    withReuseIdentifier identifier: String? = nil) {
         let cellId = identifier ?? String(describing: type)
