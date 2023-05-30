@@ -23,7 +23,7 @@ final class TabBarViewController: UITabBarController {
     
     func setUpTabBarItem() {
         // 인스턴스화
-        let vc1 = TodayViewController()
+        let vc1 = DetailViewController()
         let vc2 = ViewController()
         let vc3 = ViewController()
         let vc4 = ViewController()
