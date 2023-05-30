@@ -11,8 +11,6 @@ import RxSwift
 
 final class SearchHeaderView: UITableViewHeaderFooterView {
     
-    static let identifier = "SearchHeaderView"
-    
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 22, weight: .bold)
@@ -23,10 +21,10 @@ final class SearchHeaderView: UITableViewHeaderFooterView {
     private let cellDisposeBag = DisposeBag()
     private var disposeBag = DisposeBag()
     
-    let onData: AnyObserver<String>
+    let onData: AnyObserver<SearchItemType>
     
     override init(reuseIdentifier: String?) {
-        let data = PublishSubject<String>()
+        let data = PublishSubject<SearchItemType>()
         onData = data.asObserver()
         super.init(reuseIdentifier: reuseIdentifier)
         setup(data: data)
@@ -36,11 +34,16 @@ final class SearchHeaderView: UITableViewHeaderFooterView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func setup(data: PublishSubject<String>) {
+    private func setup(data: PublishSubject<SearchItemType>) {
         data.observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] title in
+            .subscribe(onNext: { [weak self] type in
                 guard let self = self else { return }
-                self.titleLabel.text = title
+                switch type {
+                case .new:
+                    titleLabel.text = "새로운 발견"
+                case .suggestion:
+                    titleLabel.text = "추천 앱과 게임"
+                }
             })
             .disposed(by: cellDisposeBag)
         
