@@ -43,10 +43,18 @@ final class SearchViewModel: SearchViewModelType {
         ]),
         
         SearchSection(type: .suggestion, items: [
-            SuggestionItem(title: "abcdlsjfnldanslfnldasn"),
-            SuggestionItem(title: "abcsdafsafsafsaf"),
-            SuggestionItem(title: "abc"),
-            SuggestionItem(title: "abc"),
+            SuggestionItem(appIcon:  "https://images.applypixels.com/images/originals/1696b13e-7eb7-4fd0-83a1-bb89d5aa5ab8.png",
+                           title: "abcdlsjfnldanslfnldasn",
+                           desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."),
+            SuggestionItem(appIcon:  "https://images.applypixels.com/images/originals/1696b13e-7eb7-4fd0-83a1-bb89d5aa5ab8.png",
+                           title: "abcsdafsafsafsaf",
+                           desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."),
+            SuggestionItem(appIcon:  "https://images.applypixels.com/images/originals/1696b13e-7eb7-4fd0-83a1-bb89d5aa5ab8.png",
+                           title: "abc",
+                           desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."),
+            SuggestionItem(appIcon:  "https://images.applypixels.com/images/originals/1696b13e-7eb7-4fd0-83a1-bb89d5aa5ab8.png",
+                           title: "abc",
+                           desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."),
         ])
     ])
     private let secondOutput = PublishSubject<Void>()
