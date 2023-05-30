@@ -8,4 +8,7 @@
 import Foundation
 
 struct RelationItem {
+    var appIcon: String?
+    var title: String?
+    var desc: String?
 }
