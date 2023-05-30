@@ -14,20 +14,40 @@ class SearchViewController: UIViewController {
     private let disposeBag = DisposeBag()
     private let viewModel = SearchViewModel()
     
+    private var datasource: [SearchSection] = []
+    
     private let cancelButton: UIButton = {
         let button = UIButton()
         button.setTitle("취소", for: .normal)
         button.setTitleColor(UIColor.systemBlue, for: .normal)
         return button
     }()
-    private let searchBar: UISearchBar = {
-        let searchBar = UISearchBar()
-        searchBar.placeholder = "게임, 앱, 스토리 등"
-        return searchBar
+    private let searchController: UISearchController = {
+        let searchController = UISearchController(searchResultsController: nil)
+        searchController.searchBar.placeholder = "게임, 앱, 스토리 등"
+        searchController.searchBar.searchBarStyle = .minimal
+        searchController.definesPresentationContext = true
+        return searchController
     }()
     private let tableView: UITableView = {
-        let view = UITableView()
-        return view
+        let tableView = UITableView(frame: .zero, style: .grouped)
+        tableView.estimatedSectionHeaderHeight = CGFloat.leastNormalMagnitude
+        tableView.sectionHeaderHeight = 70
+        tableView.allowsSelection = true
+        tableView.backgroundColor = .clear
+        tableView.separatorStyle = .none
+        tableView.bounces = true
+        tableView.showsVerticalScrollIndicator = true
+        tableView.contentInset = .zero
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        
+        // Register Cell
+        tableView.register(withType: NewDiscoveryTableViewCell.self)
+        tableView.register(withType: AppDownloadTableViewCell.self)
+        
+        // Register Header & Footer
+        tableView.register(withType: SearchHeaderView.self)
+        return tableView
     }()
     
     init() {
@@ -59,33 +79,86 @@ extension SearchViewController {
     func configure() {
         view.backgroundColor = .white
         
-        self.navigationItem.title = "검색"
+        tableView.delegate = self
+        tableView.dataSource = self
+        
+        navigationItem.title = "검색"
         navigationController?.navigationBar.prefersLargeTitles = true
-        self.navigationItem.titleView = searchBar
+        navigationItem.searchController = searchController
+        navigationItem.hidesSearchBarWhenScrolling = false
         
-        let rightButton = UIBarButtonItem(customView: cancelButton)
-        navigationItem.rightBarButtonItem = rightButton
-        
-        [
-            tableView
-        ].forEach {
-            view.addSubview($0)
-            $0.translatesAutoresizingMaskIntoConstraints = false
-        }
-        
+        view.addSubview(tableView)
         NSLayoutConstraint.activate([
-            
-            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            tableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-            tableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor)
-            
+            tableView.topAnchor.constraint(equalTo: view.topAnchor),
+            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
+        
+//        guard let navigationBar = self.navigationController?.navigationBar else {
+//            return
+//        }
+//        let searchBarHeight = searchController.searchBar.frame.height
+//        navigationController?.navigationBar.addSubview(cancelButton)
+//        cancelButton.translatesAutoresizingMaskIntoConstraints = false
+//        NSLayoutConstraint.activate([
+//            cancelButton.trailingAnchor.constraint(equalTo: navigationBar.trailingAnchor, constant: -16),
+//            cancelButton.bottomAnchor.constraint(equalTo: navigationBar.bottomAnchor, constant: -searchBarHeight - 4),
+//        ])
     }
     
     func setupBindings() {
         // MARK: Input
+        cancelButton.rx.tap
+            .subscribe(onNext: {
+                print("click")
+            })
+            .disposed(by: disposeBag)
         
         // MARK: Output
+        viewModel.output.datasource
+            .drive(onNext: { [weak self] value in
+                guard let self = self else { return }
+                datasource = value
+            })
+            .disposed(by: disposeBag)
+    }
+}
+
+extension SearchViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let header: SearchHeaderView = tableView.dequeueReusableHeaderFooterView()
+        header.onData.onNext(datasource[section].type)
+        return header
+    }
+}
+
+extension SearchViewController: UITableViewDataSource {
+
+    // MARK: - Section
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return datasource.count
+    }
+
+    // MARK: - Row Cell
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return datasource[section].items.count
+    }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        let item = datasource[indexPath.section].items[indexPath.row]
+        switch datasource[indexPath.section].type {
+        case .new:
+            let cell: NewDiscoveryTableViewCell = tableView.dequeueReusableCell(for: indexPath)
+            cell.onData.onNext(item as? NewItem ?? NewItem())
+            cell.selectionStyle = .none
+            return cell
+        case .suggestion:
+            let cell: AppDownloadTableViewCell = tableView.dequeueReusableCell(for: indexPath)
+            cell.onData.onNext(item as? SuggestionItem ?? SuggestionItem())
+            cell.selectionStyle = .none
+            return cell
+        }
     }
 }
