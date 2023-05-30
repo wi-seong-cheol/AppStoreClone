@@ -20,26 +20,26 @@ final class DetailViewController: UIViewController, CollectionViewCustomLayout {
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         
         // Register Cell
-        collectionView.registerCell(withType: AppTitleCollectionViewCell.self)
-        collectionView.registerCell(withType: AppBriefInfoCollectionViewCell.self)
-        collectionView.registerCell(withType: AppPreviewCollectionViewCell.self)
-        collectionView.registerCell(withType: AppExplanationCollectionViewCell.self)
-        collectionView.registerCell(withType: AppDeveloperCollectionViewCell.self)
-        collectionView.registerCell(withType: AppEventCollectionViewCell.self)
-        collectionView.registerCell(withType: AppEvaluationCollectionViewCell.self)
-        collectionView.registerCell(withType: AppReviewCollectionViewCell.self)
-        collectionView.registerCell(withType: AppFeatureCollectionViewCell.self)
-        collectionView.registerCell(withType: AppPrivacyCollectionViewCell.self)
-        collectionView.registerCell(withType: AppInfoCollectionViewCell.self)
-        collectionView.registerCell(withType: AppSupportCollectionViewCell.self)
-        collectionView.registerCell(withType: AppRelationCollectionViewCell.self)
-        collectionView.registerCell(withType: AppLikableCollectionViewCell.self)
+        collectionView.register(withType: AppTitleCollectionViewCell.self)
+        collectionView.register(withType: AppBriefInfoCollectionViewCell.self)
+        collectionView.register(withType: AppPreviewCollectionViewCell.self)
+        collectionView.register(withType: AppExplanationCollectionViewCell.self)
+        collectionView.register(withType: AppDeveloperCollectionViewCell.self)
+        collectionView.register(withType: AppEventCollectionViewCell.self)
+        collectionView.register(withType: AppEvaluationCollectionViewCell.self)
+        collectionView.register(withType: AppReviewCollectionViewCell.self)
+        collectionView.register(withType: AppFeatureCollectionViewCell.self)
+        collectionView.register(withType: AppPrivacyCollectionViewCell.self)
+        collectionView.register(withType: AppInfoCollectionViewCell.self)
+        collectionView.register(withType: AppSupportCollectionViewCell.self)
+        collectionView.register(withType: AppRelationCollectionViewCell.self)
+        collectionView.register(withType: AppLikableCollectionViewCell.self)
         
         // Register Header
-        collectionView.registerSupplementaryView(withType: ImageHeaderView.self)
-        collectionView.registerSupplementaryView(withType: CommonCollectionHeaderView.self)
-        collectionView.registerSupplementaryView(withType: PreviewCollectionHeaderView.self)
-        collectionView.registerSupplementaryView(withType: PrivacyCollectionHeaderView.self)
+        collectionView.register(withType: ImageHeaderView.self)
+        collectionView.register(withType: CommonCollectionHeaderView.self)
+        collectionView.register(withType: PreviewCollectionHeaderView.self)
+        collectionView.register(withType: PrivacyCollectionHeaderView.self)
         
         return collectionView
     }()
@@ -264,9 +264,6 @@ extension DetailViewController: UICollectionViewDataSource {
             switch datasource[indexPath.section].type {
             case .title:
                 return UICollectionReusableView()
-            case .preview:
-                let headerView: PreviewCollectionHeaderView = collectionView.dequeueReusableSupplementaryView(for: indexPath)
-                return headerView
             case .privacy:
                 let headerView: PrivacyCollectionHeaderView = collectionView.dequeueReusableSupplementaryView(for: indexPath)
                 headerView.onData.onNext("DeveloperID")
