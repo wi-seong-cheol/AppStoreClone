@@ -54,6 +54,8 @@ final class CommonCollectionHeaderView: UICollectionReusableView {
             .subscribe(onNext: { [weak self] type in
                 guard let self = self else { return }
                 switch type {
+                case .preview:
+                    mainText.text = "미리보기"
                 case .event:
                     mainText.text = "이벤트"
                 case .evauation:
@@ -64,6 +66,9 @@ final class CommonCollectionHeaderView: UICollectionReusableView {
                     headerButton.setTitle("버전 기록", for: .normal)
                 case .info:
                     mainText.text = "정보"
+                    headerButton.setTitle("모두 보기", for: .normal)
+                case .relation:
+                    mainText.text = "wi-seong의 다른 앱"
                     headerButton.setTitle("모두 보기", for: .normal)
                 case .likable:
                     mainText.text = "좋아할 만한 다른 항목"
