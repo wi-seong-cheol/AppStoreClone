@@ -77,7 +77,7 @@ extension CollectionViewCustomLayout {
 
     func createPreviewSection(_ rect: CGRect) -> NSCollectionLayoutSection {
         let sectionMargin: CGFloat = 20
-        let groupMargin: CGFloat = 4
+        let groupMargin: CGFloat = 8
 
         //item
         let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1))
@@ -85,16 +85,15 @@ extension CollectionViewCustomLayout {
 
         //group
         let groupSize = NSCollectionLayoutSize(
-            widthDimension: .absolute(rect.width * 0.6),
+            widthDimension: .absolute(rect.width * 0.6 + groupMargin),
             heightDimension: .absolute((rect.width * 0.6) * 2.17)
         )
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitem: item, count: 1)
-        group.contentInsets = .init(top: 0, leading: groupMargin, bottom: 0, trailing: groupMargin)
 
         //section
         let section = NSCollectionLayoutSection(group: group)
         section.orthogonalScrollingBehavior = .groupPaging
-        section.contentInsets = .init(top: sectionMargin, leading: sectionMargin - groupMargin, bottom: sectionMargin, trailing: sectionMargin - groupMargin)
+        section.contentInsets = .init(top: sectionMargin, leading: sectionMargin, bottom: sectionMargin, trailing: sectionMargin - groupMargin)
 
         let sectionHeader = createItemSectionHeader()
         section.boundarySupplementaryItems = [sectionHeader]
@@ -348,26 +347,24 @@ extension CollectionViewCustomLayout {
     }
 
     func createRelationSection(_ rect: CGRect) -> NSCollectionLayoutSection {
-        let sectionMargin: CGFloat = 10
-        let groupMargin: CGFloat = 20
+        let sectionMargin: CGFloat = 20
+        let groupMargin: CGFloat = 10
 
         //item
         let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1))
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
 
-        let labelHeight = UIFont.systemFont(ofSize: 14).lineHeight
         //group
         let groupSize = NSCollectionLayoutSize(
-            widthDimension: .absolute(rect.width),
-            heightDimension: .estimated(labelHeight * 3)
+            widthDimension: .absolute(rect.width - sectionMargin * 2 + groupMargin),
+            heightDimension: .estimated(160)
         )
-        let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitem: item, count: 1)
-        group.contentInsets = .init(top: 0, leading: groupMargin, bottom: 0, trailing: groupMargin)
+        let group = NSCollectionLayoutGroup.vertical(layoutSize: groupSize, subitem: item, count: 2)
 
         //section
         let section = NSCollectionLayoutSection(group: group)
         section.orthogonalScrollingBehavior = .groupPaging
-        section.contentInsets = .init(top: sectionMargin, leading: 0, bottom: sectionMargin, trailing: 0)
+        section.contentInsets = .init(top: 0, leading: sectionMargin, bottom: 0, trailing: sectionMargin)
 
         let sectionHeader = createItemSectionHeader()
         section.boundarySupplementaryItems = [sectionHeader]
@@ -376,26 +373,24 @@ extension CollectionViewCustomLayout {
     }
 
     func createLikableSection(_ rect: CGRect) -> NSCollectionLayoutSection {
-        let sectionMargin: CGFloat = 10
-        let groupMargin: CGFloat = 20
+        let sectionMargin: CGFloat = 20
+        let groupMargin: CGFloat = 10
 
         //item
         let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1))
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
 
-        let labelHeight = UIFont.systemFont(ofSize: 14).lineHeight
         //group
         let groupSize = NSCollectionLayoutSize(
-            widthDimension: .absolute(rect.width),
-            heightDimension: .estimated(labelHeight * 3)
+            widthDimension: .absolute(rect.width - sectionMargin * 2 + groupMargin),
+            heightDimension: .estimated(160)
         )
-        let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitem: item, count: 1)
-        group.contentInsets = .init(top: 0, leading: groupMargin, bottom: 0, trailing: groupMargin)
+        let group = NSCollectionLayoutGroup.vertical(layoutSize: groupSize, subitem: item, count: 2)
 
         //section
         let section = NSCollectionLayoutSection(group: group)
         section.orthogonalScrollingBehavior = .groupPaging
-        section.contentInsets = .init(top: sectionMargin, leading: 0, bottom: sectionMargin, trailing: 0)
+        section.contentInsets = .init(top: 0, leading: sectionMargin, bottom: 0, trailing: sectionMargin)
 
         let sectionHeader = createItemSectionHeader()
         section.boundarySupplementaryItems = [sectionHeader]
