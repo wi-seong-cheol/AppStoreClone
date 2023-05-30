@@ -38,7 +38,6 @@ final class DetailViewController: UIViewController, CollectionViewCustomLayout {
         // Register Header
         collectionView.register(withType: ImageHeaderView.self)
         collectionView.register(withType: CommonCollectionHeaderView.self)
-        collectionView.register(withType: PreviewCollectionHeaderView.self)
         collectionView.register(withType: PrivacyCollectionHeaderView.self)
         
         return collectionView
