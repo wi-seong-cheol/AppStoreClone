@@ -12,7 +12,6 @@ import RxSwift
 final class AppRelationCollectionViewCell: UICollectionViewCell {
     
     var disposeBag = DisposeBag()
-    
     let onData: AnyObserver<RelationItem>
     
     private let appIcon: UIImageView = {
