@@ -8,13 +8,10 @@
 import RxCocoa
 import RxSwift
 
-typealias TodayViewModelInput = (apiCall: AnyObserver<Void>,
-                            startTap: AnyObserver<Void>,
-                            endTap: AnyObserver<Void>,
-                            resetTap: AnyObserver<Void>)
-typealias TodayViewModelOutput = (timer: Driver<Int>,
-                             formattedTimer: Driver<String>,
-                             isRunning: Driver<Bool>)
+typealias TodayViewModelInput = (firstInput: AnyObserver<Void>,
+                                 secondInput: AnyObserver<Void>)
+typealias TodayViewModelOutput = (firstOutput: Observable<Void>,
+                                  secondOutput: Observable<Void>)
 
 protocol TodayViewModelType {
     var input: TodayViewModelInput { get }
@@ -29,27 +26,21 @@ final class TodayViewModel: TodayViewModelType {
     private var timerSubscription: Disposable?
     
     // MARK: INPUT
-    private let apiCall = PublishSubject<Void>()
-    private let startTap = PublishSubject<Void>()
-    private let endTap = PublishSubject<Void>()
-    private let resetTap = PublishSubject<Void>()
+    private let firstInput = PublishSubject<Void>()
+    private let secondInput = PublishSubject<Void>()
     
     var input: TodayViewModelInput {
-        return (apiCall.asObserver(),
-                startTap.asObserver(),
-                endTap.asObserver(),
-                resetTap.asObserver())
+        return (firstInput.asObserver(),
+                secondInput.asObserver())
     }
     
     // MARK: OUTPUT
-    private let timer = BehaviorRelay<Int>(value: 0)
-    private let formattedTimer = BehaviorRelay<String>(value: "0")
-    private let isRunning = BehaviorRelay<Bool>(value: false)
+    private let firstOutput = PublishSubject<Void>()
+    private let secondOutput = PublishSubject<Void>()
     
     var output: TodayViewModelOutput {
-        return (timer.asDriver(onErrorJustReturn: 0),
-                formattedTimer.asDriver(onErrorJustReturn: "00:00.00"),
-                isRunning.asDriver(onErrorJustReturn: false))
+        return (firstOutput: firstOutput.asObservable(),
+                secondOutput: secondOutput.asObservable())
     }
     
     init() {
