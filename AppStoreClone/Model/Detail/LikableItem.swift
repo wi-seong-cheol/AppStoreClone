@@ -8,4 +8,7 @@
 import Foundation
 
 struct LikableItem {
+    var appIcon: String?
+    var title: String?
+    var desc: String?
 }
