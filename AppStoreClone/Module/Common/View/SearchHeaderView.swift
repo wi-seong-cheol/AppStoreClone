@@ -1,5 +1,5 @@
 //
-//  CustomHeaderView.swift
+//  SearchHeaderView.swift
 //  AppStoreClone
 //
 //  Created by wi_seong on 2023/05/24.
@@ -9,13 +9,14 @@ import UIKit
 
 import RxSwift
 
-final class CustomHeaderView: UITableViewHeaderFooterView {
+final class SearchHeaderView: UITableViewHeaderFooterView {
     
-    static let identifier = "CustomHeaderView"
+    static let identifier = "SearchHeaderView"
     
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 22, weight: .bold)
+        label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
@@ -32,10 +33,7 @@ final class CustomHeaderView: UITableViewHeaderFooterView {
     }
     
     required init?(coder aDecoder: NSCoder) {
-        let data = PublishSubject<String>()
-        onData = data.asObserver()
-        super.init(coder: aDecoder)
-        setup(data: data)
+        fatalError("init(coder:) has not been implemented")
     }
 
     private func setup(data: PublishSubject<String>) {
@@ -47,8 +45,6 @@ final class CustomHeaderView: UITableViewHeaderFooterView {
             .disposed(by: cellDisposeBag)
         
         addSubview(titleLabel)
-        
-        titleLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
             titleLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),
