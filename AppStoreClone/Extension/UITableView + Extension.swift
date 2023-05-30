@@ -10,34 +10,41 @@ import UIKit
 
 extension UITableView {
     
-    func registerCell(withType type: UITableViewCell.Type,
+    func register(withType type: UITableViewCell.Type,
                       withReuseIdentifier identifier: String? = nil) {
         let cellId = identifier ?? String(describing: type)
         register(type, forCellReuseIdentifier: cellId)
     }
     
-    func dequeueCell<T: UITableViewCell>(withType type: UITableViewCell.Type) -> T {
-        guard let cell = dequeueReusableCell(withIdentifier: type.identifier) as? T else {
-            fatalError("Could not dequeue cell with identifier: \(type.identifier)")
+    func dequeueReusableCell<T: UITableViewCell>(for indexPath: IndexPath) -> T {
+        guard let cell = dequeueReusableCell(withIdentifier: T.identifier, for: indexPath) as? T else {
+            fatalError("Could not dequeue cell with identifier: \(T.identifier)")
         }
         return cell
     }
     
-    func registerHeaderFooter(withType type: UITableViewHeaderFooterView.Type,
+    func register(withType type: UITableViewHeaderFooterView.Type,
                       withReuseIdentifier identifier: String? = nil) {
         let cellId = identifier ?? String(describing: type)
         register(type, forHeaderFooterViewReuseIdentifier: cellId)
     }
     
-    func dequeueCell<T: UITableViewCell>(withType type: UITableViewCell.Type, for indexPath: IndexPath) -> T {
-        guard let cell = dequeueReusableCell(withIdentifier: type.identifier, for: indexPath) as? T else {
-            fatalError("Could not dequeue cell with identifier: \(type.identifier)")
+    func dequeueReusableHeaderFooterView<T: UITableViewHeaderFooterView>() -> T {
+        guard let cell = dequeueReusableHeaderFooterView(withIdentifier: T.identifier) as? T else {
+            fatalError("Could not dequeue cell with identifier: \(T.identifier)")
         }
         return cell
     }
 }
 
-public extension UITableViewCell {
+extension UITableViewCell {
+    
+    static var identifier: String {
+        return String(describing: self)
+    }
+}
+
+extension UITableViewHeaderFooterView {
     
     static var identifier: String {
         return String(describing: self)
