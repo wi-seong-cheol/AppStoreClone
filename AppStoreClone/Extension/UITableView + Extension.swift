@@ -10,7 +10,8 @@ import UIKit
 
 extension UITableView {
     
-    func registerCell(type: UITableViewCell.Type, identifier: String? = nil) {
+    func registerCell(withType type: UITableViewCell.Type,
+                      withReuseIdentifier identifier: String? = nil) {
         let cellId = identifier ?? String(describing: type)
         register(type, forCellReuseIdentifier: cellId)
     }
@@ -20,6 +21,12 @@ extension UITableView {
             fatalError("Could not dequeue cell with identifier: \(type.identifier)")
         }
         return cell
+    }
+    
+    func registerHeaderFooter(withType type: UITableViewHeaderFooterView.Type,
+                      withReuseIdentifier identifier: String? = nil) {
+        let cellId = identifier ?? String(describing: type)
+        register(type, forHeaderFooterViewReuseIdentifier: cellId)
     }
     
     func dequeueCell<T: UITableViewCell>(withType type: UITableViewCell.Type, for indexPath: IndexPath) -> T {
