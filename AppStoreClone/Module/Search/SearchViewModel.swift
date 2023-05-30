@@ -8,13 +8,10 @@
 import RxCocoa
 import RxSwift
 
-typealias SearchViewModelInput = (apiCall: AnyObserver<Void>,
-                            startTap: AnyObserver<Void>,
-                            endTap: AnyObserver<Void>,
-                            resetTap: AnyObserver<Void>)
-typealias SearchViewModelOutput = (timer: Driver<Int>,
-                             formattedTimer: Driver<String>,
-                             isRunning: Driver<Bool>)
+typealias SearchViewModelInput = (firstInput: AnyObserver<Void>,
+                                  secondInput: AnyObserver<Void>)
+typealias SearchViewModelOutput = (datasource: Driver<[SearchSection]>,
+                                   secondOutput: Observable<Void>)
 
 protocol SearchViewModelType {
     var input: SearchViewModelInput { get }
@@ -26,33 +23,39 @@ final class SearchViewModel: SearchViewModelType {
     @Inject var service: ItunesService
     
     private let disposeBag = DisposeBag()
-    private var timerSubscription: Disposable?
     
     // MARK: INPUT
-    private let apiCall = PublishSubject<Void>()
-    private let startTap = PublishSubject<Void>()
-    private let endTap = PublishSubject<Void>()
-    private let resetTap = PublishSubject<Void>()
+    private let firstInput = PublishSubject<Void>()
+    private let secondInput = PublishSubject<Void>()
     
-    var input: TodayViewModelInput {
-        return (apiCall.asObserver(),
-                startTap.asObserver(),
-                endTap.asObserver(),
-                resetTap.asObserver())
+    var input: SearchViewModelInput {
+        return (firstInput.asObserver(),
+                secondInput.asObserver())
     }
     
     // MARK: OUTPUT
-    private let timer = BehaviorRelay<Int>(value: 0)
-    private let formattedTimer = BehaviorRelay<String>(value: "0")
-    private let isRunning = BehaviorRelay<Bool>(value: false)
+    private let datasource = BehaviorRelay<[SearchSection]>(value: [
+        SearchSection(type: .new, items: [
+            NewItem(title: "배달"),
+            NewItem(title: "fifa"),
+            NewItem(title: "씽씽"),
+            NewItem(title: "아이돌 키우기"),
+        ]),
+        
+        SearchSection(type: .suggestion, items: [
+            SuggestionItem(title: "abcdlsjfnldanslfnldasn"),
+            SuggestionItem(title: "abcsdafsafsafsaf"),
+            SuggestionItem(title: "abc"),
+            SuggestionItem(title: "abc"),
+        ])
+    ])
+    private let secondOutput = PublishSubject<Void>()
     
-    var output: TodayViewModelOutput {
-        return (timer.asDriver(onErrorJustReturn: 0),
-                formattedTimer.asDriver(onErrorJustReturn: "00:00.00"),
-                isRunning.asDriver(onErrorJustReturn: false))
+    var output: SearchViewModelOutput {
+        return (datasource: datasource.asDriver(onErrorJustReturn: []),
+                secondOutput: secondOutput.asObservable())
     }
     
     init() {
-        
     }
 }
