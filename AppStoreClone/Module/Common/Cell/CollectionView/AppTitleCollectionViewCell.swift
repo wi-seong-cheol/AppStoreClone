@@ -12,7 +12,6 @@ import RxSwift
 final class AppTitleCollectionViewCell: UICollectionViewCell {
     
     var disposeBag = DisposeBag()
-    
     let onData: AnyObserver<TitleItem>
     
     private let thumbnail: UIImageView = {
