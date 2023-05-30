@@ -8,5 +8,4 @@
 import Foundation
 
 struct InfoItem {
-    var developerID: String?
 }
