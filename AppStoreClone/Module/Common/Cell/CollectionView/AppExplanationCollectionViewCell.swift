@@ -49,9 +49,8 @@ final class AppExplanationCollectionViewCell: UICollectionViewCell {
     private func setup(data: PublishSubject<ExplanationItem>) {
         data.observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] item in
-                guard let self = self else { return }
-                firstContent.text = item.description
-                secondContent.text = "item.descrfsdsdfsafasfso÷n"
+                self?.firstContent.text = item.description
+                self?.secondContent.text = item.description
             })
             .disposed(by: disposeBag)
         
