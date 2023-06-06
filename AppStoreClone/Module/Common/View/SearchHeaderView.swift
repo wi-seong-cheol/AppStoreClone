@@ -18,9 +18,7 @@ final class SearchHeaderView: UITableViewHeaderFooterView {
         return label
     }()
     
-    private let cellDisposeBag = DisposeBag()
     private var disposeBag = DisposeBag()
-    
     let onData: AnyObserver<SearchItemType>
     
     override init(reuseIdentifier: String?) {
@@ -37,15 +35,14 @@ final class SearchHeaderView: UITableViewHeaderFooterView {
     private func setup(data: PublishSubject<SearchItemType>) {
         data.observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] type in
-                guard let self = self else { return }
                 switch type {
                 case .new:
-                    titleLabel.text = "새로운 발견"
-                case .suggestion:
-                    titleLabel.text = "추천 앱과 게임"
+                    self?.titleLabel.text = "새로운 발견"
+                case .recommend:
+                    self?.titleLabel.text = "추천 앱과 게임"
                 }
             })
-            .disposed(by: cellDisposeBag)
+            .disposed(by: disposeBag)
         
         addSubview(titleLabel)
         NSLayoutConstraint.activate([
@@ -54,10 +51,5 @@ final class SearchHeaderView: UITableViewHeaderFooterView {
             titleLabel.topAnchor.constraint(equalTo: topAnchor, constant: 8),
             titleLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -8)
         ])
-    }
-    
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        disposeBag = DisposeBag()
     }
 }
