@@ -55,7 +55,6 @@ final class AppInfoCollectionViewCell: UICollectionViewCell {
     private func setup(data: PublishSubject<InfoItem>) {
         data.observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] item in
-                guard let self = self else { return }
             })
             .disposed(by: disposeBag)
         
