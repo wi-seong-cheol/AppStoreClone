@@ -14,5 +14,5 @@ struct SearchSection {
 
 enum SearchItemType {
     case new
-    case suggestion
+    case recommend
 }
