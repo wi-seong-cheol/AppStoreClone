@@ -78,7 +78,8 @@ final class AppRelationCollectionViewCell: UICollectionViewCell {
     }
 
     private func setup(data: PublishSubject<RelationItem>) {
-        data.observe(on: MainScheduler.instance)
+        data
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] item in
                 self?.titleText.text = item.title
                 self?.category.text = item.desc
