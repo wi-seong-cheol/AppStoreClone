@@ -12,27 +12,28 @@ import SystemConfiguration
 import RxSwift
 
 protocol APIRequestServiceProtocol {
+    
+    var isInternetAvailable: Bool { get }
+    
     func getable<T:Codable>(url: String,
                             query: [String:Any]?,
-                            interceptor: Interceptor?) -> Observable<T>?
+                            interceptor: Interceptor?) -> Observable<T>
     
     func postable<T:Codable>(url: String,
                              body: [String:Any]?,
-                             interceptor: Interceptor?) -> Observable<T>?
+                             interceptor: Interceptor?) -> Observable<T>
     
     func deletable<T:Codable>(url: String,
-                               body: [String:Any]?,
-                               interceptor: Interceptor?) -> Observable<T>?
+                              body: [String:Any]?,
+                              interceptor: Interceptor?) -> Observable<T>
     
     func putable<T:Codable>(url: String,
                             body: [String:Any]?,
-                            interceptor: Interceptor?) -> Observable<T>?
+                            interceptor: Interceptor?) -> Observable<T>
     
     func patchable<T:Codable>(url: String,
                               body: [String:Any]?,
-                              interceptor: Interceptor?) -> Observable<T>?
-    
-    func isInternetAvailable() -> Bool
+                              interceptor: Interceptor?) -> Observable<T>
     
     func networkConnectAlert()
 }
@@ -42,17 +43,46 @@ final class APIRequestService: APIRequestServiceProtocol {
     @Inject var header: HeaderCommon
     @Inject var globalAlert: GlobalAlert
     
+    //네트워크 연결상태 확인
+    var isInternetAvailable: Bool {
+        var zeroAddress = sockaddr_in()
+        zeroAddress.sin_len = UInt8(MemoryLayout.size(ofValue: zeroAddress))
+        zeroAddress.sin_family = sa_family_t(AF_INET)
+        
+        let defaultRouteReachability = withUnsafePointer(to: &zeroAddress) {
+            $0.withMemoryRebound(to: sockaddr.self, capacity: 1) { zeroSockAddress in
+                SCNetworkReachabilityCreateWithAddress(nil, zeroSockAddress)
+            }
+        }
+        
+        var flags = SCNetworkReachabilityFlags()
+        
+        if !SCNetworkReachabilityGetFlags(defaultRouteReachability!, &flags) {
+            return false
+        }
+        
+        let isReachable = flags.contains(.reachable)
+        let needsConnection = flags.contains(.connectionRequired)
+        
+        return (isReachable && !needsConnection)
+    }
+    
     func getable<T:Codable>(url: String,
                             query: [String:Any]?,
-                            interceptor: Interceptor?) -> Observable<T>? {
+                            interceptor: Interceptor?) -> Observable<T> {
         
-        if false == isInternetAvailable() {
+        if !isInternetAvailable {
             networkConnectAlert()
-            return nil
+            return .error(APIRequestError.isNotConnect)
         }
         
         return Observable.create { [weak self] observer in
-            guard let url = URL(string: url) else {
+            var urlComponents = URLComponents(string: url)
+            if let query = query {
+                let queryItems = query.map { URLQueryItem(name: $0.key, value: String(describing: $0.value)) }
+                urlComponents?.queryItems = queryItems
+            }
+            guard let url = urlComponents?.url else {
                 observer.onError(APIRequestError.invalidURL)
                 return Disposables.create()
             }
@@ -61,7 +91,7 @@ final class APIRequestService: APIRequestServiceProtocol {
                                      timeoutInterval: 10.0)
             request.httpMethod = "GET"
             request.allHTTPHeaderFields = self?.header.headerSetting()
-            
+            print(request)
             let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
                 if let error = error {
                     observer.onError(error)
@@ -72,12 +102,12 @@ final class APIRequestService: APIRequestServiceProtocol {
                     observer.onError(APIRequestError.invalidData)
                     return
                 }
-                
                 do {
                     let object = try JSONDecoder().decode(T.self, from: data)
                     observer.onNext(object)
                     observer.onCompleted()
                 } catch {
+                    print(error)
                     observer.onError(error)
                 }
             }
@@ -92,11 +122,11 @@ final class APIRequestService: APIRequestServiceProtocol {
     
     func postable<T:Codable>(url: String,
                              body: [String:Any]?,
-                             interceptor: Interceptor?) -> Observable<T>? {
+                             interceptor: Interceptor?) -> Observable<T> {
         
-        if false == isInternetAvailable() {
+        if !isInternetAvailable {
             networkConnectAlert()
-            return nil
+            return .error(APIRequestError.isNotConnect)
         }
         
         return Observable.create { [weak self] observer in
@@ -147,12 +177,12 @@ final class APIRequestService: APIRequestServiceProtocol {
     }
     
     func deletable<T:Codable>(url: String,
-                               body: [String:Any]?,
-                               interceptor: Interceptor?) -> Observable<T>? {
+                              body: [String:Any]?,
+                              interceptor: Interceptor?) -> Observable<T> {
         
-        if false == isInternetAvailable() {
+        if !isInternetAvailable {
             networkConnectAlert()
-            return nil
+            return .error(APIRequestError.isNotConnect)
         }
         
         return Observable.create { [weak self] observer in
@@ -204,11 +234,11 @@ final class APIRequestService: APIRequestServiceProtocol {
     
     func putable<T:Codable>(url: String,
                             body: [String:Any]?,
-                            interceptor: Interceptor?) -> Observable<T>? {
+                            interceptor: Interceptor?) -> Observable<T> {
         
-        if false == isInternetAvailable() {
+        if !isInternetAvailable {
             networkConnectAlert()
-            return nil
+            return .error(APIRequestError.isNotConnect)
         }
         
         return Observable.create { [weak self] observer in
@@ -260,11 +290,11 @@ final class APIRequestService: APIRequestServiceProtocol {
     
     func patchable<T:Codable>(url: String,
                               body: [String:Any]?,
-                              interceptor: Interceptor?) -> Observable<T>? {
+                              interceptor: Interceptor?) -> Observable<T> {
         
-        if false == isInternetAvailable() {
+        if !isInternetAvailable {
             networkConnectAlert()
-            return nil
+            return .error(APIRequestError.isNotConnect)
         }
         
         return Observable.create { [weak self] observer in
@@ -314,33 +344,9 @@ final class APIRequestService: APIRequestServiceProtocol {
         }
     }
     
-    //네트워크 연결상태 확인
-    func isInternetAvailable() -> Bool {
-        var zeroAddress = sockaddr_in()
-        zeroAddress.sin_len = UInt8(MemoryLayout.size(ofValue: zeroAddress))
-        zeroAddress.sin_family = sa_family_t(AF_INET)
-        
-        let defaultRouteReachability = withUnsafePointer(to: &zeroAddress) {
-            $0.withMemoryRebound(to: sockaddr.self, capacity: 1) { zeroSockAddress in
-                SCNetworkReachabilityCreateWithAddress(nil, zeroSockAddress)
-            }
-        }
-        
-        var flags = SCNetworkReachabilityFlags()
-        
-        if !SCNetworkReachabilityGetFlags(defaultRouteReachability!, &flags) {
-            return false
-        }
-        
-        let isReachable = flags.contains(.reachable)
-        let needsConnection = flags.contains(.connectionRequired)
-        
-        return (isReachable && !needsConnection)
-    }
-    
     func networkConnectAlert() {
         guard let vc = UIApplication.topViewController() else {
-            return
+            fatalError("Is Not Found TopViewController")
         }
         
         globalAlert.commonAlert(title: "네트워크 연결 확인\n",
