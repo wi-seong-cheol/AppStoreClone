@@ -52,27 +52,26 @@ final class CommonCollectionHeaderView: UICollectionReusableView {
     private func setup(data: PublishSubject<DetailItemType>) {
         data.observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] type in
-                guard let self = self else { return }
                 switch type {
                 case .preview:
-                    mainText.text = "미리보기"
+                    self?.mainText.text = "미리보기"
                 case .event:
-                    mainText.text = "이벤트"
+                    self?.mainText.text = "이벤트"
                 case .evauation:
-                    mainText.text = "평가 및 리뷰"
-                    headerButton.setTitle("모두 보기", for: .normal)
+                    self?.mainText.text = "평가 및 리뷰"
+                    self?.headerButton.setTitle("모두 보기", for: .normal)
                 case .feature:
-                    mainText.text = "새로운 기능"
-                    headerButton.setTitle("버전 기록", for: .normal)
+                    self?.mainText.text = "새로운 기능"
+                    self?.headerButton.setTitle("버전 기록", for: .normal)
                 case .info:
-                    mainText.text = "정보"
-                    headerButton.setTitle("모두 보기", for: .normal)
+                    self?.mainText.text = "정보"
+                    self?.headerButton.setTitle("모두 보기", for: .normal)
                 case .relation:
-                    mainText.text = "wi-seong의 다른 앱"
-                    headerButton.setTitle("모두 보기", for: .normal)
+                    self?.mainText.text = "wi-seong의 다른 앱"
+                    self?.headerButton.setTitle("모두 보기", for: .normal)
                 case .likable:
-                    mainText.text = "좋아할 만한 다른 항목"
-                    headerButton.setTitle("모두 보기", for: .normal)
+                    self?.mainText.text = "좋아할 만한 다른 항목"
+                    self?.headerButton.setTitle("모두 보기", for: .normal)
                 default:
                     break
                 }
