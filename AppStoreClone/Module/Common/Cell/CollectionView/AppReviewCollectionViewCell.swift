@@ -96,11 +96,10 @@ final class AppReviewCollectionViewCell: UICollectionViewCell {
     private func setup(data: PublishSubject<ReviewItem>) {
         data.observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] item in
-                guard let self = self else { return }
-                titleLabel.text = item.title
-                dateLabel.text = item.date
-                nicknameLabel.text = item.nickname
-                review.text = item.review
+                self?.titleLabel.text = item.title
+                self?.dateLabel.text = item.date
+                self?.nicknameLabel.text = item.nickname
+                self?.review.text = item.review
             })
             .disposed(by: disposeBag)
         
