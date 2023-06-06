@@ -32,46 +32,64 @@ final class DetailViewModel: DetailViewModelType {
     }
     
     // MARK: OUTPUT
-    private let datasource = BehaviorRelay<[DetailSection]>(
-        value:[
-            DetailSection(type: .title, items: [
-                TitleItem(thumbNail: "https://play-lh.googleusercontent.com/gXHJLOPxbvDkx6pD8VYxwDpqiOsfQKq-kJOCdRiaBdmX0CaAARy_WV4fJjQKT7KG0uI",
-                          title: "토킹톰 골드럼",
-                          subTitle: "최고의 고양이 러닝 액션 게임!",
-                          isDownload: false)
-            ]),
-            
-            DetailSection(type: .briefInfo, items: [
-                BriefInfoItem(type:
-                        .grade(GradeInfo(total: 4.7,
-                                                     score: 4.6))),
-                BriefInfoItem(type: .age(AgeInfo(age: "4+"))),
-                BriefInfoItem(type: .chart(ChartInfo(rank: 24,
-                                                     type: "액션"))),
-                BriefInfoItem(type: .developer(DeveloperInfo(id: "wi-seong"))),
-                BriefInfoItem(type: .language(LanguageInfo(language: "KO",
-                                                           total: 12)))
-            ]),
-            
-            DetailSection(type: .preview, items: [
-                PreviewItem(content: .photo(ScreenShot(url: "https://play-lh.googleusercontent.com/oNy-DJqUDEikAEVYuYin79DxtO1pf51T79i0exzNiKkdlDkSe_LR8jDoTbeNKyT7xDA=w1052-h592-rw"))),
-                PreviewItem(content: .photo(ScreenShot(url: "https://play-lh.googleusercontent.com/oNy-DJqUDEikAEVYuYin79DxtO1pf51T79i0exzNiKkdlDkSe_LR8jDoTbeNKyT7xDA=w1052-h592-rw"))),
-                PreviewItem(content: .photo(ScreenShot(url: "https://play-lh.googleusercontent.com/oNy-DJqUDEikAEVYuYin79DxtO1pf51T79i0exzNiKkdlDkSe_LR8jDoTbeNKyT7xDA=w1052-h592-rw"))),
-                PreviewItem(content: .photo(ScreenShot(url: "https://play-lh.googleusercontent.com/oNy-DJqUDEikAEVYuYin79DxtO1pf51T79i0exzNiKkdlDkSe_LR8jDoTbeNKyT7xDA=w1052-h592-rw")))
-            ]),
-            
-            DetailSection(type: .explanation, items: [
-                ExplanationItem(description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, ")
-            ]),
-            
-            DetailSection(type: .developer, items: [
-                DeveloperItem(developerID: "wi-seong")
-            ]),
-            
-            DetailSection(type: .event, items: [
-                EventItem(time: "(목) 오후 7:00",
-                          thumbnail: "https://res09.bignox.com/appcenter/kr/2020/01/%ED%81%AC%EA%B8%B0%EB%B3%80%ED%99%98%ED%86%A0%ED%82%B9%ED%86%B0-%EA%B3%A8%EB%93%9C%EB%9F%B0-%EB%B0%B0%EA%B2%BD.jpg")
-            ]),
+    private let datasource = BehaviorRelay<[DetailSection]>(value: [])
+    private let secondOutput = PublishSubject<Void>()
+    
+    var output: DetailViewModelOutput {
+        return (datasource: datasource.asDriver(onErrorJustReturn: []),
+                secondOutput: secondOutput.asObserver())
+    }
+    
+    init(data: Result) {
+        let titleSection = DetailSection(type: .title, items: [
+            TitleItem(thumbNail: data.artworkUrl512,
+                      title: data.trackName,
+                      subTitle: data.description,
+                      isDownload: false)
+        ])
+        
+        let briefInfoSection = DetailSection(type: .briefInfo, items: [
+            BriefInfoItem(type:
+                    .grade(GradeInfo(total: 4.7,
+                                     score: 4.6))),
+            BriefInfoItem(type: .age(AgeInfo(age: "4+"))),
+            BriefInfoItem(type: .chart(ChartInfo(rank: 24,
+                                                 type: "액션"))),
+            BriefInfoItem(type: .developer(DeveloperInfo(id: "wi-seong"))),
+            BriefInfoItem(type: .language(LanguageInfo(language: "KO",
+                                                       total: 12)))
+        ])
+        
+        guard let previewURLs = data.screenshotUrls else {
+            print("잘못된 URL입니다.")
+            return
+        }
+        let previewSection = DetailSection(type: .preview, items:
+            previewURLs.map {
+                PreviewItem(content: .photo(ScreenShot(url: $0)))
+            }
+        )
+         
+        let explanationSection = DetailSection(type: .explanation, items: [
+            ExplanationItem(description: data.description)
+        ])
+        
+        let developerSection = DetailSection(type: .developer, items: [
+            DeveloperItem(developerID: data.sellerName)
+        ])
+        
+        let eventSection = DetailSection(type: .event, items: [
+            EventItem(time: "(목) 오후 7:00",
+                      thumbnail: "https://res09.bignox.com/appcenter/kr/2020/01/%ED%81%AC%EA%B8%B0%EB%B3%80%ED%99%98%ED%86%A0%ED%82%B9%ED%86%B0-%EA%B3%A8%EB%93%9C%EB%9F%B0-%EB%B0%B0%EA%B2%BD.jpg")
+        ])
+        
+        datasource.accept([
+            titleSection,
+            briefInfoSection,
+            previewSection,
+            explanationSection,
+            developerSection,
+//            eventSection,
             
             DetailSection(type: .evauation, items: [
                 EvaluationItem(grade: 4.5,
@@ -128,25 +146,15 @@ final class DetailViewModel: DetailViewModelType {
             
             DetailSection(type: .likable, items: [
                 LikableItem(appIcon:   "https://images.applypixels.com/images/originals/1696b13e-7eb7-4fd0-83a1-bb89d5aa5ab8.png",
-                             title: "abc",
-                             desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."),
+                            title: "abc",
+                            desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."),
                 LikableItem(appIcon:   "https://images.applypixels.com/images/originals/1696b13e-7eb7-4fd0-83a1-bb89d5aa5ab8.png",
-                             title: "abc",
-                             desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."),
+                            title: "abc",
+                            desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."),
                 LikableItem(appIcon:   "https://images.applypixels.com/images/originals/1696b13e-7eb7-4fd0-83a1-bb89d5aa5ab8.png",
-                             title: "abc",
-                             desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.")
+                            title: "abc",
+                            desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.")
             ])
-            
         ])
-    private let secondOutput = PublishSubject<Void>()
-    
-    var output: DetailViewModelOutput {
-        return (datasource: datasource.asDriver(onErrorJustReturn: []),
-                secondOutput: secondOutput.asObserver())
-    }
-    
-    init() {
-        
     }
 }
