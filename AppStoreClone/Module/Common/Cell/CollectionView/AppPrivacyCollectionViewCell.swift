@@ -52,9 +52,8 @@ final class AppPrivacyCollectionViewCell: UICollectionViewCell {
     private func setup(data: PublishSubject<PrivacyItem>) {
         data.observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] item in
-                guard let self = self else { return }
-                titleLabel.text = item.title
-                desc.text = item.content
+                self?.titleLabel.text = item.title
+                self?.desc.text = item.content
             })
             .disposed(by: disposeBag)
         
