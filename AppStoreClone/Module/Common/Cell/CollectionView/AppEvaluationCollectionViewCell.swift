@@ -55,9 +55,8 @@ final class AppEvaluationCollectionViewCell: UICollectionViewCell {
     private func setup(data: PublishSubject<EvaluationItem>) {
         data.observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] item in
-                guard let self = self else { return }
                 guard let grade = item.grade else { return }
-                self.grade.text = String(format: "%.1f", grade)
+                self?.grade.text = String(format: "%.1f", grade)
                 
             })
             .disposed(by: disposeBag)
