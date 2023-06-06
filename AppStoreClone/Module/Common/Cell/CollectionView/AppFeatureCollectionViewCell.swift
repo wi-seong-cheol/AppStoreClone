@@ -58,10 +58,9 @@ final class AppFeatureCollectionViewCell: UICollectionViewCell {
     private func setup(data: PublishSubject<FeatureItem>) {
         data.observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] item in
-                guard let self = self else { return }
-                version.text = item.version
-                date.text = item.date
-                content.text = item.content
+                self?.version.text = item.version
+                self?.date.text = item.date
+                self?.content.text = item.content
             })
             .disposed(by: disposeBag)
         
