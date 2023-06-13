@@ -16,6 +16,15 @@ class SearchResultViewController: UIViewController {
     
     private var datasource: SearchResultSection = SearchResultSection.EMPTY
     
+    private lazy var indicator: UIActivityIndicatorView = {
+        let indicatorView = UIActivityIndicatorView()
+        indicatorView.frame = CGRect(x: 0, y: 0, width: 50, height: 50)
+        indicatorView.center = self.view.center
+        indicatorView.hidesWhenStopped = true
+        indicatorView.style = .medium
+        indicatorView.stopAnimating()
+        return indicatorView
+    }()
     private let tableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .grouped)
         
@@ -73,6 +82,9 @@ extension SearchResultViewController {
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
+        
+        view.addSubview(indicator)
+        
     }
     
     func setupBindings() {
@@ -92,22 +104,27 @@ extension SearchResultViewController {
             })
             .disposed(by: disposeBag)
         
+        viewModel.output.loading
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] status in
+                if status {
+                    self?.indicator.startAnimating()
+                } else {
+                    self?.indicator.stopAnimating()
+                }
+            })
+            .disposed(by: disposeBag)
     }
 }
 
 extension SearchResultViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        switch datasource.type {
-        case .searchAppItem:
-            break
-        case .searchTerm:
-            Observable.just(indexPath.row)
-                .subscribe(onNext: { [weak self] index in
-                    self?.viewModel.input.searchClick.onNext(index)
-                })
-                .disposed(by: disposeBag)
-        }
+        Observable.just(indexPath.row)
+            .subscribe(onNext: { [weak self] index in
+                self?.viewModel.input.selectIndex.onNext(index)
+            })
+            .disposed(by: disposeBag)
     }
 }
 
@@ -123,12 +140,14 @@ extension SearchResultViewController: UITableViewDataSource {
         switch datasource.type {
         case .searchAppItem:
             let cell: SearchAppTableViewCell = tableView.dequeueReusableCell(for: indexPath)
-            cell.bind(viewModel: SearchAppTableViewCellViewModel(item: item as? SearchAppItem ?? SearchAppItem()))
+            let item = item as? SearchAppItem ?? SearchAppItem()
+            cell.viewModel.input.onNext(item)
             cell.selectionStyle = .none
             return cell
         case .searchTerm:
             let cell: SearchTermTableViewCell = tableView.dequeueReusableCell(for: indexPath)
-            cell.bind(viewModel: SearchTermTableViewCellViewModel(item: item as? SearchTermItem ?? SearchTermItem()))
+            let item = item as? SearchTermItem ?? SearchTermItem()
+            cell.viewModel.input.onNext(item)
             cell.selectionStyle = .none
             return cell
         }
