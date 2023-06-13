@@ -130,30 +130,6 @@ private extension StarRatingView {
         return containerLayer
     }
     
-    // MARK: 이미지로 별 그릴 때
-    //    func create(image: UIImage, size: Double = 12.0) -> CALayer {
-    //        let containerLayer = createContainerLayer(size)
-    //        let imageLayer = createContainerLayer(size)
-    //
-    //        imageLayer.contents = image.cgImage
-    //        imageLayer.contentsGravity = CALayerContentsGravity.resizeAspect
-    //        containerLayer.addSublayer(imageLayer)
-    //
-    //        return containerLayer
-    //    }
-    //
-    //    func create(image: UIImage, filledColor: UIColor = .gray, size: Double = 12.0) -> CALayer {
-    //        let containerLayer = createContainerLayer(size)
-    //        let imageLayer = createContainerLayer(size)
-    //
-    //        imageLayer.contents = image.cgImage
-    //        imageLayer.contentsGravity = CALayerContentsGravity.resizeAspect
-    //        containerLayer.mask = imageLayer
-    //        containerLayer.backgroundColor = filledColor.cgColor
-    //
-    //        return containerLayer
-    //    }
-    
     func createShapeLayer(
         _ path: CGPath,
         lineWidth: Double,
