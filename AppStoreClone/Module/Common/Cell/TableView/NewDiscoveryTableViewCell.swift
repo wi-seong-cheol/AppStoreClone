@@ -45,8 +45,7 @@ class NewDiscoveryTableViewCell: UITableViewCell {
     private func setup(data: PublishSubject<NewItem>) {
         data.observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] item in
-                guard let self = self else { return }
-                self.titleText.text = item.title
+                self?.titleText.text = item.title
             })
             .disposed(by: cellDisposeBag)
         

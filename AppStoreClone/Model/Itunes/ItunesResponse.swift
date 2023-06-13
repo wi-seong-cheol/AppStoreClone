@@ -9,23 +9,23 @@ import Foundation
 
 struct ItunesResponse: Codable {
     let resultCount: Int?
-    let tracks: [Track]?
+    let results: [Result]?
     
     enum CodingKeys: String, CodingKey {
         case resultCount
-        case tracks = "results"
+        case results
     }
     
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         resultCount = try container.decodeIfPresent(Int.self, forKey: .resultCount)
         
-        var trackArray = try container.nestedUnkeyedContainer(forKey: .tracks)
-        var trackData: [Track] = []
-        while (!trackArray.isAtEnd) {
-            let track = try trackArray.decode(Track.self)
-            trackData.append(track)
+        var resultArray = try container.nestedUnkeyedContainer(forKey: .results)
+        var resultData: [Result] = []
+        while (!resultArray.isAtEnd) {
+            let result = try resultArray.decode(Result.self)
+            resultData.append(result)
         }
-        tracks = trackData
+        results = resultData
     }
 }

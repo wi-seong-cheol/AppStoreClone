@@ -13,6 +13,7 @@ final class AppPreviewCollectionViewCell: UICollectionViewCell {
     
     var disposeBag = DisposeBag()
     let onData: AnyObserver<PreviewItem>
+    private let loadImage: PublishSubject<String>
     
     private let content: UIImageView = {
         let imageView = UIImageView()
@@ -24,7 +25,9 @@ final class AppPreviewCollectionViewCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         let data = PublishSubject<PreviewItem>()
+        let load = PublishSubject<String>()
         onData = data.asObserver()
+        loadImage = load.asObserver()
         super.init(frame: frame)
         setup(data: data)
     }
@@ -34,24 +37,26 @@ final class AppPreviewCollectionViewCell: UICollectionViewCell {
     }
 
     private func setup(data: PublishSubject<PreviewItem>) {
-        data.observe(on: MainScheduler.instance)
+        data
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] item in
-                guard let self = self else { return }
                 switch item.content {
                 case let .photo(data):
-                    ImageLoader.cache_loadImage(url: data.url)
-                        .observe(on: MainScheduler.instance)
-                        .subscribe(onNext: { [weak self] image in
-                            guard let self = self else { return }
-                            self.content.image = image
-                        })
-                        .disposed(by: disposeBag)
+                    self?.loadImage.onNext(data.url)
                 case let .video(video):
                     // Preview 비디오 타입 코드 작성
                     break
                 case .none:
                     break
                 }
+            })
+            .disposed(by: disposeBag)
+        
+        loadImage
+            .flatMap { ImageLoader.cache_loadImage(from: $0) }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] image in
+                self?.content.image = image
             })
             .disposed(by: disposeBag)
         

@@ -13,6 +13,7 @@ class SearchViewController: UIViewController {
     
     private let disposeBag = DisposeBag()
     private let viewModel = SearchViewModel()
+    private let relatedSearchViewModel = SearchResultViewModel()
     
     private var datasource: [SearchSection] = []
     
@@ -22,8 +23,8 @@ class SearchViewController: UIViewController {
         button.setTitleColor(UIColor.systemBlue, for: .normal)
         return button
     }()
-    private let searchController: UISearchController = {
-        let searchController = UISearchController(searchResultsController: nil)
+    private lazy var searchController: UISearchController = {
+        let searchController = UISearchController(searchResultsController: SearchResultViewController(viewModel: relatedSearchViewModel))
         searchController.searchBar.placeholder = "게임, 앱, 스토리 등"
         searchController.searchBar.searchBarStyle = .minimal
         searchController.definesPresentationContext = true
@@ -31,6 +32,7 @@ class SearchViewController: UIViewController {
     }()
     private let tableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .grouped)
+        tableView.keyboardDismissMode = .onDrag
         tableView.estimatedSectionHeaderHeight = CGFloat.leastNormalMagnitude
         tableView.sectionHeaderHeight = 70
         tableView.allowsSelection = true
@@ -47,8 +49,10 @@ class SearchViewController: UIViewController {
         
         // Register Header & Footer
         tableView.register(withType: SearchHeaderView.self)
+        
         return tableView
     }()
+    private let searchBar = UISearchBar()
     
     init() {
         super.init(nibName: nil, bundle: nil)
@@ -65,10 +69,6 @@ class SearchViewController: UIViewController {
         setupBindings()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-    }
-    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
@@ -82,6 +82,7 @@ extension SearchViewController {
         tableView.delegate = self
         tableView.dataSource = self
         
+        navigationItem.largeTitleDisplayMode = .automatic
         navigationItem.title = "검색"
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.searchController = searchController
@@ -94,38 +95,57 @@ extension SearchViewController {
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
-        
-//        guard let navigationBar = self.navigationController?.navigationBar else {
-//            return
-//        }
-//        let searchBarHeight = searchController.searchBar.frame.height
-//        navigationController?.navigationBar.addSubview(cancelButton)
-//        cancelButton.translatesAutoresizingMaskIntoConstraints = false
-//        NSLayoutConstraint.activate([
-//            cancelButton.trailingAnchor.constraint(equalTo: navigationBar.trailingAnchor, constant: -16),
-//            cancelButton.bottomAnchor.constraint(equalTo: navigationBar.bottomAnchor, constant: -searchBarHeight - 4),
-//        ])
     }
     
     func setupBindings() {
         // MARK: Input
-        cancelButton.rx.tap
-            .subscribe(onNext: {
-                print("click")
-            })
+        Observable.just(())
+            .bind(to: viewModel.input.fetch)
+            .disposed(by: disposeBag)
+        
+        searchController.searchBar.rx.text
+            .orEmpty
+            .debounce(RxTimeInterval.milliseconds(5), scheduler: MainScheduler.instance)
+            .bind(to: relatedSearchViewModel.input.searchText)
             .disposed(by: disposeBag)
         
         // MARK: Output
         viewModel.output.datasource
             .drive(onNext: { [weak self] value in
-                guard let self = self else { return }
-                datasource = value
+                self?.datasource = value
+                self?.tableView.reloadData()
             })
+            .disposed(by: disposeBag)
+        
+        viewModel.output.errorMessage
+            .subscribe(onNext: { [weak self] message in
+                self?.confirmAlert(message)
+            })
+            .disposed(by: disposeBag)
+        
+        relatedSearchViewModel.output.updateSearchText
+            .bind(to: searchController.searchBar.rx.text)
             .disposed(by: disposeBag)
     }
 }
 
 extension SearchViewController: UITableViewDelegate {
+    
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        switch datasource[indexPath.section].type {
+        case .new:
+            print(datasource[indexPath.section].items)
+        case .recommend:
+            viewModel.output.appData
+                .drive(onNext: { [weak self] data in
+                    let vc = DetailViewController(viewModel: DetailViewModel(data: data[indexPath.row]))
+                    self?.navigationController?.pushViewController(vc, animated: true)
+                })
+                .disposed(by: disposeBag)
+        }
+    }
+
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let header: SearchHeaderView = tableView.dequeueReusableHeaderFooterView()
         header.onData.onNext(datasource[section].type)
@@ -154,9 +174,9 @@ extension SearchViewController: UITableViewDataSource {
             cell.onData.onNext(item as? NewItem ?? NewItem())
             cell.selectionStyle = .none
             return cell
-        case .suggestion:
+        case .recommend:
             let cell: AppDownloadTableViewCell = tableView.dequeueReusableCell(for: indexPath)
-            cell.onData.onNext(item as? SuggestionItem ?? SuggestionItem())
+            cell.onData.onNext(item as? RecommendItem ?? RecommendItem())
             cell.selectionStyle = .none
             return cell
         }

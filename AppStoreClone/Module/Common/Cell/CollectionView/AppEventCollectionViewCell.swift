@@ -13,6 +13,7 @@ final class AppEventCollectionViewCell: UICollectionViewCell {
     
     var disposeBag = DisposeBag()
     let onData: AnyObserver<EventItem>
+    private let loadImage: PublishSubject<String?>
     
     private let timeLabel: UILabel = {
         let label = UILabel()
@@ -31,7 +32,9 @@ final class AppEventCollectionViewCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         let data = PublishSubject<EventItem>()
+        let load = PublishSubject<String?>()
         onData = data.asObserver()
+        loadImage = load.asObserver()
         super.init(frame: frame)
         setup(data: data)
     }
@@ -43,16 +46,17 @@ final class AppEventCollectionViewCell: UICollectionViewCell {
     private func setup(data: PublishSubject<EventItem>) {
         data.observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] item in
-                guard let self = self else { return }
-                timeLabel.text = item.time
-                guard let url = item.thumbnail else { return }
-                ImageLoader.cache_loadImage(url: url)
-                    .observe(on: MainScheduler.instance)
-                    .subscribe(onNext: { [weak self] image in
-                        guard let self = self else { return }
-                        self.thumbnail.image = image
-                    })
-                    .disposed(by: disposeBag)
+                self?.timeLabel.text = item.time
+                self?.loadImage.onNext(item.thumbnail)
+            })
+            .disposed(by: disposeBag)
+        
+        loadImage
+            .compactMap { $0 }
+            .flatMap { ImageLoader.cache_loadImage(from: $0) }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] image in
+                self?.thumbnail.image = image
             })
             .disposed(by: disposeBag)
         

@@ -62,8 +62,7 @@ final class PrivacyCollectionHeaderView: UICollectionReusableView {
     private func setup(data: PublishSubject<String>) {
         data.observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] developerID in
-                guard let self = self else { return }
-                desc.text = "\(developerID) 개발자가 아래 설명되 데이터 처리 방식이 앱의 개인정보 처리방침에 포함되어 있을 수 있다고 표시했습니다. 자세한 내용은 개발자의 개인정보 처리방침을 참조하십시오."
+                self?.desc.text = "\(developerID) 개발자가 아래 설명되 데이터 처리 방식이 앱의 개인정보 처리방침에 포함되어 있을 수 있다고 표시했습니다. 자세한 내용은 개발자의 개인정보 처리방침을 참조하십시오."
             })
             .disposed(by: disposeBag)
         

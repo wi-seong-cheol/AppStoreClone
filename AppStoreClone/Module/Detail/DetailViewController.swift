@@ -12,7 +12,7 @@ import RxSwift
 final class DetailViewController: UIViewController, CollectionViewCustomLayout {
     
     private let disposeBag = DisposeBag()
-    private let viewModel = DetailViewModel()
+    private let viewModel: DetailViewModel
     private var datasource: [DetailSection] = []
     
     private lazy var collectionView: UICollectionView = { [unowned self] in
@@ -81,7 +81,8 @@ final class DetailViewController: UIViewController, CollectionViewCustomLayout {
         }
     }()
     
-    init() {
+    init(viewModel: DetailViewModel) {
+        self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -96,11 +97,6 @@ final class DetailViewController: UIViewController, CollectionViewCustomLayout {
         setupBindings()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        self.navigationController?.setNavigationBarHidden(false, animated: animated)
-    }
-    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
@@ -109,6 +105,7 @@ final class DetailViewController: UIViewController, CollectionViewCustomLayout {
 extension DetailViewController {
     
     func configure() {
+        navigationItem.largeTitleDisplayMode = .never
         collectionView.dataSource = self
         
         view.addSubview(collectionView)
@@ -209,7 +206,7 @@ extension DetailViewController: UICollectionViewDataSource {
         }
     }
     
-    func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         
         switch datasource[indexPath.section].type {
         case .title:

@@ -75,20 +75,20 @@ final class AppTitleCollectionViewCell: UICollectionViewCell {
     }
 
     private func setup(data: PublishSubject<TitleItem>) {
-        data.observe(on: MainScheduler.instance)
+        data
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] item in
-                guard let self = self else { return }
-                self.titleText.text = item.title
-                self.subText.text = item.subTitle
-                
-                guard let url = item.thumbNail else { return }
-                ImageLoader.cache_loadImage(url: url)
-                    .observe(on: MainScheduler.instance)
-                    .subscribe(onNext: { [weak self] image in
-                        guard let self = self else { return }
-                        self.thumbnail.image = image
-                    })
-                    .disposed(by: disposeBag)
+                self?.titleText.text = item.title
+                self?.subText.text = item.subTitle
+            })
+            .disposed(by: disposeBag)
+        
+        data
+            .compactMap { $0.thumbNail }
+            .flatMap { ImageLoader.cache_loadImage(from: $0) }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] image in
+                self?.thumbnail.image = image
             })
             .disposed(by: disposeBag)
         
@@ -96,23 +96,23 @@ final class AppTitleCollectionViewCell: UICollectionViewCell {
         NSLayoutConstraint.activate([
             thumbnail.heightAnchor.constraint(equalToConstant: 120),
             thumbnail.widthAnchor.constraint(equalToConstant: 120),
-            thumbnail.topAnchor.constraint(equalTo: topAnchor, constant: 16),
-            thumbnail.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16),
-            thumbnail.leadingAnchor.constraint(equalTo: leadingAnchor)
+            thumbnail.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
+            thumbnail.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16),
+            thumbnail.leadingAnchor.constraint(equalTo: contentView.leadingAnchor)
         ])
         
         contentView.addSubview(titleText)
         NSLayoutConstraint.activate([
-            titleText.topAnchor.constraint(equalTo: topAnchor, constant: 16),
+            titleText.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
             titleText.leadingAnchor.constraint(equalTo: thumbnail.trailingAnchor, constant: 16),
-            titleText.trailingAnchor.constraint(equalTo: trailingAnchor)
+            titleText.trailingAnchor.constraint(equalTo: contentView.trailingAnchor)
         ])
         
         contentView.addSubview(subText)
         NSLayoutConstraint.activate([
             subText.topAnchor.constraint(equalTo: titleText.bottomAnchor, constant: 2),
             subText.leadingAnchor.constraint(equalTo: thumbnail.trailingAnchor, constant: 16),
-            subText.trailingAnchor.constraint(equalTo: trailingAnchor)
+            subText.trailingAnchor.constraint(equalTo: contentView.trailingAnchor)
         ])
         
         contentView.addSubview(download)
@@ -120,7 +120,7 @@ final class AppTitleCollectionViewCell: UICollectionViewCell {
             download.widthAnchor.constraint(equalToConstant: 70),
             download.heightAnchor.constraint(equalToConstant: 30),
             download.topAnchor.constraint(greaterThanOrEqualTo: subText.bottomAnchor, constant: 4),
-            download.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16),
+            download.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16),
             download.leadingAnchor.constraint(equalTo: thumbnail.trailingAnchor, constant: 16)
         ])
 
@@ -136,7 +136,7 @@ final class AppTitleCollectionViewCell: UICollectionViewCell {
             share.heightAnchor.constraint(equalToConstant: 26),
             share.centerYAnchor.constraint(equalTo: paymentType.centerYAnchor),
             share.leadingAnchor.constraint(greaterThanOrEqualTo: paymentType.trailingAnchor, constant: 4),
-            share.trailingAnchor.constraint(equalTo: trailingAnchor)
+            share.trailingAnchor.constraint(equalTo: contentView.trailingAnchor)
         ])
     }
     

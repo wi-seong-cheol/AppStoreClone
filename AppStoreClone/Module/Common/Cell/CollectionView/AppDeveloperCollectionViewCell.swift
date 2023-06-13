@@ -59,8 +59,7 @@ final class AppDeveloperCollectionViewCell: UICollectionViewCell {
     private func setup(data: PublishSubject<DeveloperItem>) {
         data.observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] item in
-                guard let self = self else { return }
-                developerID.text = item.developerID
+                self?.developerID.text = item.developerID
             })
             .disposed(by: disposeBag)
         

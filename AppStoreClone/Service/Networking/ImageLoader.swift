@@ -15,22 +15,26 @@ final class ImageLoader {
     
     @Inject static var cache: ImageCache
     
-    static func loadImage(from url: String) -> Observable<UIImage?> {
-        return Observable.create { emitter in
-            let task = URLSession.shared.dataTask(with: URL(string: url)!) { data, _, error in
+    static func loadImage(from urlString: String) -> Observable<UIImage?> {
+        return Observable.create { observer in
+            guard let url = URL(string: urlString) else {
+                observer.onCompleted()
+                return Disposables.create()
+            }
+            let task = URLSession.shared.dataTask(with: url) { data, _, error in
                 if let error = error {
-                    emitter.onError(error)
+                    observer.onError(error)
                     return
                 }
                 guard let data = data,
                       let image = UIImage(data: data) else {
-                    emitter.onNext(nil)
-                    emitter.onCompleted()
+                    observer.onNext(nil)
+                    observer.onCompleted()
                     return
                 }
                 
-                emitter.onNext(image)
-                emitter.onCompleted()
+                observer.onNext(image)
+                observer.onCompleted()
             }
             task.resume()
             return Disposables.create {
@@ -39,14 +43,17 @@ final class ImageLoader {
         }
     }
     
-    static func cache_loadImage(url: String) -> Observable<UIImage?> {
+    static func cache_loadImage(from urlString: String) -> Observable<UIImage?> {
         return Observable.create({ observer in
-            if let image = ImageLoader.cache.imageFromCacheWithUrl(url: url) {
+            if let image = ImageLoader.cache.imageFromCacheWithUrl(url: urlString) {
                 observer.onNext(image)
                 observer.onCompleted()
             } else {
-                let task = URLSession.shared.dataTask(with: URL(string: url)!) { data, _, error in
-                    
+                guard let url = URL(string: urlString) else {
+                    observer.onCompleted()
+                    return Disposables.create()
+                }
+                let task = URLSession.shared.dataTask(with: url) { data, _, error in
                     if let error = error {
                         observer.onError(error)
                         return
@@ -57,18 +64,18 @@ final class ImageLoader {
                         observer.onCompleted()
                         return
                     }
-                    ImageLoader.cache.saveImageToCache(image: image, url: url)
+                    
                     observer.onNext(image)
                     observer.onCompleted()
                 }
                 task.resume()
-                
                 return Disposables.create {
                     task.cancel()
                 }
             }
             return Disposables.create()
-        }).subscribe(on: ConcurrentDispatchQueueScheduler(qos: .background))
-            .catchAndReturn(nil)
+        })
+        .subscribe(on: ConcurrentDispatchQueueScheduler(qos: .background))
+        .catchAndReturn(nil)
     }
 }

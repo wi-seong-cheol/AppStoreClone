@@ -15,9 +15,10 @@ class AppDownloadTableViewCell: UITableViewCell {
     private let cellDisposeBag = DisposeBag()
     private var disposeBag = DisposeBag()
     
-    let onData: AnyObserver<SuggestionItem>
+    let onData: AnyObserver<RecommendItem>
+    private let loadImage: PublishSubject<String?>
     
-    private let appIcon: UIImageView = {
+    private let iconImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.clipsToBounds = true
         imageView.layer.cornerRadius = 10
@@ -67,8 +68,10 @@ class AppDownloadTableViewCell: UITableViewCell {
     }()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        let data = PublishSubject<SuggestionItem>()
+        let data = PublishSubject<RecommendItem>()
+        let load = PublishSubject<String?>()
         onData = data.asObserver()
+        loadImage = load.asObserver()
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setup(data: data)
     }
@@ -77,38 +80,39 @@ class AppDownloadTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func setup(data: PublishSubject<SuggestionItem>) {
+    private func setup(data: PublishSubject<RecommendItem>) {
         data.observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] item in
-                guard let self = self else { return }
-                self.titleText.text = item.title
-                self.category.text = item.desc
-                guard let url = item.appIcon else { return }
-                ImageLoader.cache_loadImage(url: url)
-                    .observe(on: MainScheduler.instance)
-                    .subscribe(onNext: { [weak self] image in
-                        guard let self = self else { return }
-                        self.appIcon.image = image
-                    })
-                    .disposed(by: disposeBag)
+                self?.titleText.text = item.title
+                self?.category.text = item.desc
+                self?.loadImage.onNext(item.appIcon)
             })
-            .disposed(by: cellDisposeBag)
+            .disposed(by: disposeBag)
         
-        contentView.addSubview(appIcon)
+        loadImage
+            .compactMap { $0 }
+            .flatMap { ImageLoader.cache_loadImage(from: $0) }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] image in
+                self?.iconImageView.image = image
+            })
+            .disposed(by: disposeBag)
+        
+        contentView.addSubview(iconImageView)
         NSLayoutConstraint.activate([
-            appIcon.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            appIcon.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
-            appIcon.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10),
-            appIcon.heightAnchor.constraint(equalToConstant: 60),
-            appIcon.widthAnchor.constraint(equalToConstant: 60)
+            iconImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            iconImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
+            iconImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10),
+            iconImageView.heightAnchor.constraint(equalToConstant: 60),
+            iconImageView.widthAnchor.constraint(equalToConstant: 60)
         ])
         
         textStackView.addArrangedSubview(titleText)
         textStackView.addArrangedSubview(category)
         contentView.addSubview(textStackView)
         NSLayoutConstraint.activate([
-            textStackView.leadingAnchor.constraint(equalTo: appIcon.trailingAnchor, constant: 20),
-            textStackView.centerYAnchor.constraint(equalTo: appIcon.centerYAnchor)
+            textStackView.leadingAnchor.constraint(equalTo: iconImageView.trailingAnchor, constant: 20),
+            textStackView.centerYAnchor.constraint(equalTo: iconImageView.centerYAnchor)
         ])
         
         contentView.addSubview(download)

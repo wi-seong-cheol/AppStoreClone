@@ -10,4 +10,5 @@ import Foundation
 enum APIRequestError: Error {
     case invalidData
     case invalidURL
+    case isNotConnect
 }
