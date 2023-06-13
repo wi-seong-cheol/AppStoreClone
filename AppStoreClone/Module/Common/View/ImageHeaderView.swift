@@ -37,11 +37,10 @@ final class ImageHeaderView: UICollectionReusableView {
     private func setup(data: PublishSubject<Void>) {
         backgroundColor = .gray
         
-        ImageLoader.cache_loadImage(url: "https://images.applypixels.com/images/originals/1696b13e-7eb7-4fd0-83a1-bb89d5aa5ab8.png")
+        ImageLoader.cache_loadImage(from: "https://images.applypixels.com/images/originals/1696b13e-7eb7-4fd0-83a1-bb89d5aa5ab8.png")
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] image in
-                guard let self = self else { return }
-                self.imageView.image = image
+                self?.imageView.image = image
             })
             .disposed(by: disposeBag)
         

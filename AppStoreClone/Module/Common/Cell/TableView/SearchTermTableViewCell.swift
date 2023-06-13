@@ -13,6 +13,7 @@ import RxSwift
 class SearchTermTableViewCell: UITableViewCell {
     
     private var disposeBag = DisposeBag()
+    let viewModel: SearchTermTableViewCellViewModelType
     
     private let searchTerm: UILabel = {
         let label = UILabel()
@@ -21,29 +22,29 @@ class SearchTermTableViewCell: UITableViewCell {
     }()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        viewModel = SearchTermTableViewCellViewModel()
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setConstraint()
+        bind()
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
-    func bind(viewModel: SearchTermTableViewCellViewModelType) {
-        viewModel.output
-            .map { $0.searchTerm }
-            .bind(to: searchTerm.rx.text)
-            .disposed(by: disposeBag)
-    }
     
     override func prepareForReuse() {
         super.prepareForReuse()
         searchTerm.text = nil
-        disposeBag = DisposeBag()
     }
 }
 
 private extension SearchTermTableViewCell {
+    
+    private func bind() {
+        viewModel.output
+            .drive(searchTerm.rx.text)
+            .disposed(by: disposeBag)
+    }
     
     func setConstraint() {
         contentView.addSubview(searchTerm)

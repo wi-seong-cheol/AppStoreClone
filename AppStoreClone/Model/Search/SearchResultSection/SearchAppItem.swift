@@ -11,5 +11,6 @@ struct SearchAppItem {
     var icon: String?
     var title: String?
     var desc: String?
+    var starRating: Double?
     var preview: [String]?
 }

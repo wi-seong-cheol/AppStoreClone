@@ -12,10 +12,8 @@ import RxSwift
 
 class NewDiscoveryTableViewCell: UITableViewCell {
     
-    private let cellDisposeBag = DisposeBag()
-    private var disposeBag = DisposeBag()
-    
-    let onData: AnyObserver<NewItem>
+    private let disposeBag = DisposeBag()
+    let viewModel: NewDiscoveryTableViewCellViewModelType
     
     private let separatorView: UIView = {
         let view = UIView()
@@ -32,23 +30,31 @@ class NewDiscoveryTableViewCell: UITableViewCell {
     }()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        let data = PublishSubject<NewItem>()
-        onData = data.asObserver()
+        viewModel = NewDiscoveryTableViewCellViewModel()
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        setup(data: data)
+        setConstraint()
+        bind()
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        titleText.text = nil
+    }
+}
 
-    private func setup(data: PublishSubject<NewItem>) {
-        data.observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] item in
-                self?.titleText.text = item.title
-            })
-            .disposed(by: cellDisposeBag)
-        
+private extension NewDiscoveryTableViewCell {
+    
+    func bind() {
+        viewModel.output
+            .drive(titleText.rx.text)
+            .disposed(by: disposeBag)
+    }
+    
+    func setConstraint() {
         contentView.addSubview(separatorView)
         NSLayoutConstraint.activate([
             separatorView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
@@ -64,10 +70,5 @@ class NewDiscoveryTableViewCell: UITableViewCell {
             titleText.topAnchor.constraint(equalTo: separatorView.topAnchor, constant: 10),
             titleText.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10)
         ])
-    }
-    
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        disposeBag = DisposeBag()
     }
 }

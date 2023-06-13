@@ -45,7 +45,7 @@ class SearchViewController: UIViewController {
         
         // Register Cell
         tableView.register(withType: NewDiscoveryTableViewCell.self)
-        tableView.register(withType: AppDownloadTableViewCell.self)
+        tableView.register(withType: AppRecommendTableViewCell.self)
         
         // Register Header & Footer
         tableView.register(withType: SearchHeaderView.self)
@@ -123,14 +123,24 @@ extension SearchViewController {
             })
             .disposed(by: disposeBag)
         
+        viewModel.output.pushDetailView
+            .subscribe(onNext: { [weak self] data in
+                let vc = DetailViewController(viewModel: DetailViewModel(data: data))
+                self?.navigationController?.pushViewController(vc, animated: true)
+            })
+            .disposed(by: disposeBag)
+        
         relatedSearchViewModel.output.updateSearchText
             .bind(to: searchController.searchBar.rx.text)
+            .disposed(by: disposeBag)
+        
+        relatedSearchViewModel.output.selectedItem
+            .bind(to: viewModel.input.selectedItem)
             .disposed(by: disposeBag)
     }
 }
 
 extension SearchViewController: UITableViewDelegate {
-    
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch datasource[indexPath.section].type {
@@ -139,8 +149,8 @@ extension SearchViewController: UITableViewDelegate {
         case .recommend:
             viewModel.output.appData
                 .drive(onNext: { [weak self] data in
-                    let vc = DetailViewController(viewModel: DetailViewModel(data: data[indexPath.row]))
-                    self?.navigationController?.pushViewController(vc, animated: true)
+                    let item = data[indexPath.row]
+                    self?.viewModel.input.selectedItem.onNext(item)
                 })
                 .disposed(by: disposeBag)
         }
@@ -171,12 +181,14 @@ extension SearchViewController: UITableViewDataSource {
         switch datasource[indexPath.section].type {
         case .new:
             let cell: NewDiscoveryTableViewCell = tableView.dequeueReusableCell(for: indexPath)
-            cell.onData.onNext(item as? NewItem ?? NewItem())
+            let item = item as? NewItem ?? NewItem()
+            cell.viewModel.input.onNext(item)
             cell.selectionStyle = .none
             return cell
         case .recommend:
-            let cell: AppDownloadTableViewCell = tableView.dequeueReusableCell(for: indexPath)
-            cell.onData.onNext(item as? RecommendItem ?? RecommendItem())
+            let cell: AppRecommendTableViewCell = tableView.dequeueReusableCell(for: indexPath)
+            let item = item as? RecommendItem ?? RecommendItem()
+            cell.viewModel.input.onNext(item)
             cell.selectionStyle = .none
             return cell
         }

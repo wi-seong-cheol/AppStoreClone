@@ -10,13 +10,10 @@ import UIKit
 import RxRelay
 import RxSwift
 
-class AppDownloadTableViewCell: UITableViewCell {
+class AppRecommendTableViewCell: UITableViewCell {
     
-    private let cellDisposeBag = DisposeBag()
     private var disposeBag = DisposeBag()
-    
-    let onData: AnyObserver<RecommendItem>
-    private let loadImage: PublishSubject<String?>
+    let viewModel: AppRecommendTableViewCellViewModelType
     
     private let iconImageView: UIImageView = {
         let imageView = UIImageView()
@@ -32,7 +29,7 @@ class AppDownloadTableViewCell: UITableViewCell {
         label.numberOfLines = 2
         return label
     }()
-    private let category: UILabel = {
+    private let descText: UILabel = {
         let label = UILabel()
         label.textColor = UIColor.systemGray
         label.font = UIFont.systemFont(ofSize: 14)
@@ -68,36 +65,42 @@ class AppDownloadTableViewCell: UITableViewCell {
     }()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        let data = PublishSubject<RecommendItem>()
-        let load = PublishSubject<String?>()
-        onData = data.asObserver()
-        loadImage = load.asObserver()
+        viewModel = AppRecommendTableViewCellViewModel()
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        setup(data: data)
+        setConstraint()
+        bind()
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        titleText.text = nil
+        descText.text = nil
+        iconImageView.image = nil
+    }
+}
 
-    private func setup(data: PublishSubject<RecommendItem>) {
-        data.observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] item in
-                self?.titleText.text = item.title
-                self?.category.text = item.desc
-                self?.loadImage.onNext(item.appIcon)
-            })
+
+private extension AppRecommendTableViewCell {
+    
+    func bind() {
+        viewModel.output.titleString
+            .drive(titleText.rx.text)
             .disposed(by: disposeBag)
         
-        loadImage
-            .compactMap { $0 }
-            .flatMap { ImageLoader.cache_loadImage(from: $0) }
-            .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] image in
-                self?.iconImageView.image = image
-            })
+        viewModel.output.descString
+            .drive(descText.rx.text)
             .disposed(by: disposeBag)
         
+        viewModel.output.iconImage
+            .drive(iconImageView.rx.image)
+            .disposed(by: disposeBag)
+    }
+    
+    func setConstraint() {
         contentView.addSubview(iconImageView)
         NSLayoutConstraint.activate([
             iconImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
@@ -108,7 +111,7 @@ class AppDownloadTableViewCell: UITableViewCell {
         ])
         
         textStackView.addArrangedSubview(titleText)
-        textStackView.addArrangedSubview(category)
+        textStackView.addArrangedSubview(descText)
         contentView.addSubview(textStackView)
         NSLayoutConstraint.activate([
             textStackView.leadingAnchor.constraint(equalTo: iconImageView.trailingAnchor, constant: 20),
@@ -130,10 +133,5 @@ class AppDownloadTableViewCell: UITableViewCell {
             paymentType.topAnchor.constraint(equalTo: download.bottomAnchor, constant: 4),
             paymentType.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -4),
         ])
-    }
-    
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        disposeBag = DisposeBag()
     }
 }
