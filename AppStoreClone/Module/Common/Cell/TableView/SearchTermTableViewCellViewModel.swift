@@ -6,9 +6,10 @@
 //
 
 import RxSwift
+import RxCocoa
 
-typealias SearchTermTableViewCellViewModelInput = ()
-typealias SearchTermTableViewCellViewModelOutput = Observable<SearchTermItem>
+typealias SearchTermTableViewCellViewModelInput = AnyObserver<SearchTermItem>
+typealias SearchTermTableViewCellViewModelOutput = Driver<String>
 
 protocol SearchTermTableViewCellViewModelType {
     var input: SearchTermTableViewCellViewModelInput { get }
@@ -16,19 +17,28 @@ protocol SearchTermTableViewCellViewModelType {
 }
 
 class SearchTermTableViewCellViewModel: SearchTermTableViewCellViewModelType {
-
-    // MARK: Input & Output
-    var input: SearchTermTableViewCellViewModelInput { return }
+    
+    private let disposeBag = DisposeBag()
+    
+    // MARK: Input
+    private let item = PublishSubject<SearchTermItem>()
+    
+    var input: SearchTermTableViewCellViewModelInput {
+        return item.asObserver()
+    }
     
     // MARK: OUTPUT
-    private let item: Observable<SearchTermItem>
+    private let searchTerm = BehaviorRelay<String>(value: "")
     
     var output: SearchTermTableViewCellViewModelOutput {
-        return item.asObservable()
+        return searchTerm.asDriver(onErrorJustReturn: "")
     }
     
     // MARK: Init
-    init(item: SearchTermItem) {
-        self.item = Observable.just(item)
+    init() {
+        item
+            .compactMap { $0.searchTerm }
+            .bind(to: searchTerm)
+            .disposed(by: disposeBag)
     }
 }
