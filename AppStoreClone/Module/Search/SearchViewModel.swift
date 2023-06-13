@@ -12,10 +12,12 @@ import RxSwift
 
 typealias SearchViewModelInput = (fetch: AnyObserver<Void>,
                                   searchText: AnyObserver<String>,
-                                  error: AnyObserver<Error>)
+                                  error: AnyObserver<Error>,
+                                  selectedItem: AnyObserver<Result>)
 typealias SearchViewModelOutput = (datasource: Driver<[SearchSection]>,
                                    appData: Driver<[Result]>,
-                                   errorMessage: Observable<String>)
+                                   errorMessage: Observable<String>,
+                                   pushDetailView: Observable<Result>)
 
 protocol SearchViewModelType {
     var input: SearchViewModelInput { get }
@@ -32,22 +34,26 @@ final class SearchViewModel: SearchViewModelType {
     private let fetch = PublishSubject<Void>()
     private let searchText = PublishSubject<String>()
     private let error = PublishSubject<Error>()
+    private let selectedItem = PublishSubject<Result>()
     
     var input: SearchViewModelInput {
         return (fetch.asObserver(),
                 searchText.asObserver(),
-                error.asObserver())
+                error.asObserver(),
+                selectedItem.asObserver())
     }
     
     // MARK: OUTPUT
     private let datasource = BehaviorRelay<[SearchSection]>(value: [])
     private let appData = BehaviorRelay<[Result]>(value: [])
     private let errorMessage = PublishSubject<String>()
+    private let pushDetailView = PublishSubject<Result>()
     
     var output: SearchViewModelOutput {
         return (datasource: datasource.asDriver(onErrorJustReturn: []),
                 appData: appData.asDriver(onErrorJustReturn: []),
-                errorMessage: errorMessage.asObserver())
+                errorMessage: errorMessage.asObserver(),
+                pushDetailView: pushDetailView.asObserver())
     }
     
     init() {
@@ -80,6 +86,10 @@ final class SearchViewModel: SearchViewModelType {
                 case .completed: break
                 }
             })
+            .disposed(by: disposeBag)
+        
+        selectedItem
+            .bind(to: pushDetailView)
             .disposed(by: disposeBag)
         
         error
